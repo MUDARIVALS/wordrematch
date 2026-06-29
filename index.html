@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>초고화질 WebRTC 1VS1 끝말잇기 대결</title>
+    <title>무다의 끝말잇기 대결 사이트🔥_베타</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
     <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -15,70 +16,79 @@
             --card-bg: #1e293b;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; }
+        /* 모든 폰트를 배달의민족 주아체로 통일 */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Jua', sans-serif; 
+            letter-spacing: 1px;
+        }
+        
         body { background: var(--bg-dark); color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
         .game-container { width: 100%; max-width: 600px; background: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); border: 1px solid #334155; }
         
         .header { text-align: center; margin-bottom: 25px; }
-        .header h1 { font-size: 2rem; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .header h1 { font-size: 2.3rem; background: linear-gradient(to right, #6366f1, #f43f5e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
         
         /* 대기실 / 연결 화면 */
         .setup-box { background: #0f172a; padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center; border: 1px solid #334155; }
-        .peer-id-display { font-size: 1.1rem; color: #6366f1; font-weight: bold; margin: 10px 0; cursor: pointer; background: #1e293b; padding: 8px; border-radius: 8px; display: inline-block; }
+        .peer-id-display { font-size: 1.2rem; color: #6366f1; font-weight: bold; margin: 10px 0; cursor: pointer; background: #1e293b; padding: 10px; border-radius: 8px; display: inline-block; }
         
         /* 점수판 및 목숨 */
         .scoreboard { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 25px; display: none; }
         .player-card { flex: 1; padding: 15px; border-radius: 16px; background: #0f172a; border: 2px solid transparent; text-align: center; transition: all 0.3s ease; }
         .player-card.active { border-color: var(--curr-color); box-shadow: 0 0 15px var(--curr-color); transform: scale(1.03); }
-        .my-title { color: var(--my-color); font-weight: bold; }
-        .opp-title { color: var(--opp-color); font-weight: bold; }
-        .score { font-size: 1.5rem; font-weight: 800; margin-top: 5px; }
-        .lives { font-size: 1.2rem; color: #f43f5e; margin-top: 5px; letter-spacing: 2px; }
+        .my-title { color: var(--my-color); font-size: 1.2rem; }
+        .opp-title { color: var(--opp-color); font-size: 1.2rem; }
+        .score { font-size: 2rem; font-weight: 800; margin-top: 5px; }
+        .lives { font-size: 1.4rem; color: #f43f5e; margin-top: 5px; letter-spacing: 4px; }
         
         /* 타이머 바 */
-        .timer-container { width: 100%; height: 8px; background: #334155; border-radius: 4px; margin-bottom: 25px; overflow: hidden; display: none;}
+        .timer-container { width: 100%; height: 12px; background: #334155; border-radius: 6px; margin-bottom: 25px; overflow: hidden; display: none;}
         .timer-bar { height: 100%; width: 100%; background: #10b981; transition: width 0.1s linear; }
 
         /* 단어 표시창 */
-        .word-display { background: #0f172a; border-radius: 16px; padding: 30px; text-align: center; margin-bottom: 25px; min-height: 120px; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .current-word { font-size: 2.5rem; font-weight: 800; letter-spacing: 2px; color: #fff; }
-        .word-meaning { font-size: 0.9rem; color: #94a3b8; margin-top: 10px; }
+        .word-display { background: #0f172a; border-radius: 16px; padding: 30px; text-align: center; margin-bottom: 25px; min-height: 140px; display: none; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #1e293b; }
+        .current-word { font-size: 3rem; font-weight: 800; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .word-meaning { font-size: 1rem; color: #94a3b8; margin-top: 12px; line-height: 1.4; }
         
         /* 입력창 */
         .input-group { display: none; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] { flex: 1; background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 15px 20px; color: white; font-size: 1.2rem; outline: none; }
+        input[type="text"] { flex: 1; background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 15px 20px; color: white; font-size: 1.4rem; outline: none; }
         input[type="text"]:focus { border-color: var(--primary); }
-        button { background: var(--primary); color: white; border: none; border-radius: 12px; padding: 0 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button { background: var(--primary); color: white; border: none; border-radius: 12px; padding: 0 25px; font-size: 1.3rem; cursor: pointer; transition: 0.2s; }
         button:hover { background: var(--primary-hover); }
         button:disabled { background: #475569; cursor: not-allowed; }
 
-        .system-msg { text-align: center; color: #f43f5e; font-weight: 600; min-height: 24px; margin-bottom: 15px; }
-        .history { max-height: 120px; overflow-y: auto; background: #0f172a; padding: 15px; border-radius: 12px; font-size: 0.9rem; color: #94a3b8; display: none; }
-        .history-item { margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .system-msg { text-align: center; color: #f43f5e; font-size: 1.1rem; min-height: 26px; margin-bottom: 15px; }
+        .history { max-height: 130px; overflow-y: auto; background: #0f172a; padding: 15px; border-radius: 12px; font-size: 1rem; color: #94a3b8; display: none; border: 1px solid #1e293b; }
+        .history-item { margin-bottom: 6px; display: flex; justify-content: space-between; }
 
         /* 결과 모달 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 10; }
-        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; }
-        .modal h2 { font-size: 2rem; margin-bottom: 15px; color: #f59e0b; }
-        .restart-btn { width: 100%; padding: 15px; background: var(--primary); border-radius: 12px; border: none; color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 10; }
+        .modal-content { background: var(--card-bg); padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; border: 2px solid #334155; }
+        .modal h2 { font-size: 2.5rem; margin-bottom: 15px; color: #f59e0b; }
+        .modal p { font-size: 1.2rem; margin-bottom: 25px; color: #cbd5e1; }
+        .restart-btn { width: 100%; padding: 15px; background: var(--primary); border-radius: 12px; border: none; color: white; font-size: 1.3rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="game-container">
         <div class="header">
-            <h1>국어대사전 멀티 끝말잇기</h1>
-            <p id="status-text" style="color: #94a3b8; font-size: 0.9rem;">네트워크 초기화 중...</p>
+            <h1>무다의 끝말잇기 대결 사이트🔥_베타</h1>
+            <p id="status-text" style="color: #6366f1; font-size: 1rem; margin-top: 5px;">네트워크 연결 준비 중...</p>
         </div>
 
         <div class="setup-box" id="setup-box">
-            <p>상대방에게 내 코드를 공유하거나, 상대방 코드를 입력하세요.</p>
-            <div class="peer-id-display" id="my-id-display" onclick="copyMyId()">내 코드 생성 중...</div>
-            <div style="margin: 15px 0; color:#64748b;">OR</div>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="peer-id-input" placeholder="상대방 코드를 입력하세요" style="padding: 10px;">
-                <button onclick="connectToPeer()" style="padding: 0 15px; font-size:0.9rem;">대결 신청</button>
+            <p style="color: #94a3b8; margin-bottom: 10px;">상대방에게 내 코드를 공유하거나, 상대방 코드를 입력하세요.</p>
+            <div class="peer-id-display" id="my-id-display" onclick="copyMyId()">코드 생성 중...</div>
+            <div style="margin: 10px 0; color:#64748b;">OR</div>
+            <div style="display: flex; gap: 8px; justify-content: center;">
+                <input type="text" id="peer-id-input" placeholder="상대방 코드 4자리" style="padding: 10px; font-size: 1.1rem; max-width: 200px; text-align: center;">
+                <button onclick="connectToPeer()" style="padding: 0 20px; font-size:1.1rem;">대결 신청</button>
             </div>
         </div>
 
@@ -99,7 +109,7 @@
 
         <div class="word-display" id="word-display">
             <div class="current-word" id="current-word">-</div>
-            <div class="word-meaning" id="word-meaning">대결이 곧 시작됩니다.</div>
+            <div class="word-meaning" id="word-meaning">게임 동기화 중... 잠시만 기다려주세요.</div>
         </div>
 
         <div class="system-msg" id="system-msg"></div>
@@ -115,14 +125,13 @@
     <div class="modal" id="game-over-modal">
         <div class="modal-content">
             <h2 id="winner-title">결과</h2>
-            <p id="game-over-reason" style="margin-bottom: 20px;"></p>
+            <p id="game-over-reason"></p>
             <button class="restart-btn" onclick="location.reload()">새 게임 찾기</button>
         </div>
     </div>
 
     <script>
-        // 국립국어원 표준국어대사전 API 키가 있다면 입력하세요.
-        const DICTIONARY_API_KEY = ''; 
+        const DICTIONARY_API_KEY = ''; // 표준국어대사전 오픈 API 키 입력 시 실시간 100% 동기화 검증
 
         let peer = null;
         let conn = null;
@@ -133,8 +142,6 @@
         let usedWords = new Set();
         let myScore = 0;
         let oppScore = 0;
-        
-        // 🧡 목숨 시스템 추가 (각 플레이어 기본 2개)
         let myLives = 2;
         let oppLives = 2;
 
@@ -142,20 +149,17 @@
         let timeLeft = 15;
         const MAX_TIME = 15;
 
-        const startWords = ['국어', '세계', '노트', '컴퓨터', '하늘', '과자', '인간', '사랑', '지구', '태양'];
+        const startWords = ['국어', '세계', '노트', '컴퓨터', '하늘', '과자', '인간', '사랑', '지구', '태양', '학교', '수박'];
+        const forbiddenJong = [10, 11, 12, 13, 14, 15, 18, 20]; 
 
-        // 실시간 한국어 유효 음절 분석 테이블 (말이 안되는 무작위 초/중/종성 결합 방지 알고리즘용)
-        // 빈번하게 장난으로 쓰이는 의미 없는 종성 겹받침 및 불가능한 자음 패턴을 1차 필터링합니다.
-        const forbiddenJong = [10, 11, 12, 13, 14, 15, 18, 20]; // ㄳ, ㄵ, ㄶ, ㄺ, ㄻ, ㄼ, ㄽ, ㄾ, ㄿ, ㅀ, ㅄ 중 실생활 비사용 형태 검출용
-
-        // --- 1. WebRTC 네트워크 설정 ---
+        // 네트워크 초기화 및 버그 방지 안정화 고정
         function initNetwork() {
             const shortId = Math.floor(1000 + Math.random() * 9000);
-            peer = new Peer(`wordgame-${shortId}`);
+            peer = new Peer(`mudaword-${shortId}`);
 
             peer.on('open', (id) => {
-                const displayId = id.replace('wordgame-', '');
-                document.getElementById('my-id-display').innerText = `내 방 코드: ${displayId} (클릭하여 복사)`;
+                const displayId = id.replace('mudaword-', '');
+                document.getElementById('my-id-display').innerText = `내 방 코드: ${displayId} (클릭 시 복사)`;
                 document.getElementById('status-text').innerText = '상대방의 연결을 기다리는 중...';
             });
 
@@ -167,7 +171,7 @@
             });
 
             peer.on('error', (err) => {
-                alert('네트워크 오류가 발생했습니다: ' + err.type);
+                alert('네트워크 혼잡 또는 에러가 발생하여 재조정합니다.');
                 location.reload();
             });
         }
@@ -176,35 +180,38 @@
             const inputId = document.getElementById('peer-id-input').value.trim();
             if(!inputId) return alert('코드를 입력하세요.');
             
-            document.getElementById('status-text').innerText = '상대방에게 연결 시도 중...';
-            conn = peer.connect(`wordgame-${inputId}`);
+            document.getElementById('status-text').innerText = '상대방 방에 입장 중...';
+            conn = peer.connect(`mudaword-${inputId}`);
             amIHost = false;
             setupConnection();
         }
 
         function setupConnection() {
             conn.on('open', () => {
-                document.getElementById('status-text').innerText = '연결 성공!';
-                document.getElementById('setup-box').style.display = 'none';
+                document.getElementById('status-text').innerText = '연결 성공! 잠시 후 대결이 시작됩니다.';
                 
-                document.getElementById('scoreboard').style.display = 'flex';
-                document.getElementById('timer-container').style.display = 'block';
-                document.getElementById('word-display').style.display = 'flex';
-                document.getElementById('input-group').style.display = 'flex';
-                document.getElementById('history-box').style.display = 'block';
+                // [시작 버그 수정] 레이아웃이 켜지는 시점과 데이터 수신 타이밍 일치화
+                setTimeout(() => {
+                    document.getElementById('setup-box').style.display = 'none';
+                    document.getElementById('scoreboard').style.display = 'flex';
+                    document.getElementById('timer-container').style.display = 'block';
+                    document.getElementById('word-display').style.display = 'flex';
+                    document.getElementById('input-group').style.display = 'flex';
+                    document.getElementById('history-box').style.display = 'block';
 
-                if (amIHost) {
-                    isMyTurn = true;
-                    currentWord = startWords[Math.floor(Math.random() * startWords.length)];
-                    usedWords.add(currentWord);
-                    
-                    sendData({
-                        type: 'START',
-                        word: currentWord,
-                        used: Array.from(usedWords)
-                    });
-                    startGame();
-                }
+                    if (amIHost) {
+                        isMyTurn = true;
+                        currentWord = startWords[Math.floor(Math.random() * startWords.length)];
+                        usedWords.add(currentWord);
+                        
+                        sendData({
+                            type: 'START',
+                            word: currentWord,
+                            used: Array.from(usedWords)
+                        });
+                        startGame();
+                    }
+                }, 800);
             });
 
             conn.on('data', (data) => {
@@ -212,7 +219,7 @@
             });
 
             conn.on('close', () => {
-                alert('상대방과의 연결이 끊어졌습니다.');
+                alert('상대방이 대결에서 이탈했습니다.');
                 location.reload();
             });
         }
@@ -224,10 +231,9 @@
         function copyMyId() {
             const text = document.getElementById('my-id-display').innerText.split(': ')[1].split(' ')[0];
             navigator.clipboard.writeText(text);
-            alert('코드가 클립보드에 복사되었습니다: ' + text);
+            alert('코드가 복사되었습니다! 상대방에게 알려주세요: ' + text);
         }
 
-        // --- 2. 데이터 수신 및 게임 동기화 ---
         function handleRemoteData(data) {
             switch(data.type) {
                 case 'START':
@@ -250,16 +256,13 @@
                     setTurnUI();
                     break;
                 case 'WRONG_ANSWER':
-                    // 상대방이 틀려서 목숨이 깎였다는 신호를 받음
                     oppLives = data.oppLives;
                     updateLivesUI();
-                    showSystemMsg(`상대방이 말도 안 되는 단어를 입력하여 목숨을 잃었습니다!`);
+                    showSystemMsg(`상대방의 오답으로 기회가 넘어왔습니다!`);
                     
-                    // 상대방 목숨이 0이 되면 내가 승리
                     if (oppLives <= 0) {
-                        endGame('WIN', '상대방의 목숨이 모두 소진되었습니다!');
+                        endGame('WIN', '상대방의 목숨이 소진되었습니다!');
                     } else {
-                        // 목숨은 깎였지만 기회는 유지되어 턴이 내게 넘어옴
                         isMyTurn = true;
                         setTurnUI();
                     }
@@ -270,7 +273,7 @@
             }
         }
 
-        // --- 3. 두음 법칙 알고리즘 ---
+        // 두음법칙 변환기
         function getInitialChar(char) {
             const charCode = char.charCodeAt(0) - 44032;
             if (charCode < 0 || charCode > 11171) return char;
@@ -284,25 +287,26 @@
             return char;
         }
 
-        // --- 4. [고도화] 말도 안 되는 단어 사전 필터링 메커니즘 ---
+        // 단어 정밀 검사 알고리즘
         async function checkValidDictionary(word) {
             if (word.length < 2) return { valid: false, msg: "최소 2글자 이상이어야 합니다." };
-            if (!/^[가-힣]+$/.test(word)) return { valid: false, msg: "올바른 한글 단어가 아닙니다." };
+            if (!/^[가-힣]+$/.test(word)) return { valid: false, msg: "올바른 한글 형태가 아닙니다." };
             
-            // [어휘 분석 검증 메커니즘] 무작위 쿼티 타이핑 제한
+            // [복사 오류 해결] 장난식 반복 결합 차단 (예: 자름자름, 바다바다 등 패턴 감지)
+            const halfLen = Math.floor(word.length / 2);
+            if (word.length % 2 === 0 && word.substring(0, halfLen) === word.substring(halfLen)) {
+                return { valid: false, msg: "동일 단어를 반복 합성한 꼼수 단어는 불가능합니다!" };
+            }
+
+            // 자모 무작위 조합 차단 필터
             for (let i = 0; i < word.length; i++) {
                 const code = word.charCodeAt(i) - 44032;
                 const jong = code % 28;
-                const cho = Math.floor(code / 588);
-                const jung = Math.floor((code % 588) / 28);
-                
-                // 일상 단어에서 절대 결합될 수 없는 자모 결합 및 이상한 종성 겹받침 단어 차단
-                if (forbiddenJong.includes(jong) || (cho === 11 && jong === 27)) {
-                    return { valid: false, msg: "사전에 존재하지 않는 국어 파괴 단어입니다." };
+                if (forbiddenJong.includes(jong)) {
+                    return { valid: false, msg: "존재하지 않는 외계어 단어입니다." };
                 }
             }
 
-            // 정식 API 연동 시 실시간 대사전 체크
             if (DICTIONARY_API_KEY) {
                 try {
                     const url = `https://stdict.korean.go.kr/api/search.do?key=${DICTIONARY_API_KEY}&req_type=json&q=${encodeURIComponent(word)}&type_search=search&part=word`;
@@ -312,15 +316,16 @@
                         return { valid: true, meaning: data.channel.item[0].sense.definition };
                     }
                 } catch(e) { console.error(e); }
-                return { valid: false, msg: "표준국어대사전에 없는 단어이거나 명사가 아닙니다." };
+                return { valid: false, msg: "국어대사전에 명사로 등록되지 않은 단어입니다." };
             }
             
-            return { valid: true, meaning: "표준국어대사전 규칙에 적합한 단어입니다." };
+            return { valid: true, meaning: "유효성 알고리즘을 통과한 표준 적합 어휘입니다." };
         }
 
-        // --- 5. 게임 컨트롤 플로우 ---
         function startGame() {
             document.getElementById('current-word').innerText = currentWord;
+            document.getElementById('word-meaning').innerText = "상대방의 턴을 기다리거나 단어를 입력하세요!";
+            document.getElementById('status-text').innerText = '🔥 실시간 대결 진행 중';
             updateLivesUI();
             setTurnUI();
         }
@@ -363,15 +368,13 @@
                 if(timeLeft <= 0) {
                     clearInterval(timer);
                     if(isMyTurn) {
-                        // 시간초과 시 즉시 패배 처리 (목숨 소진 개념 아님)
-                        sendData({ type: 'GAME_OVER', winner: 'OPP', reason: '시간 초과로 승리하셨습니다!' });
+                        sendData({ type: 'GAME_OVER', winner: 'OPP', reason: '시간 초과로 패배하셨습니다!' });
                         endGame('LOSE', '시간 초과로 패배하셨습니다!');
                     }
                 }
             }, 100);
         }
 
-        // 단어 패널티 및 차감 시스템
         function handleWrongAnswer(msg) {
             myLives--;
             updateLivesUI();
@@ -379,10 +382,9 @@
             document.getElementById('word-input').value = '';
 
             if (myLives <= 0) {
-                sendData({ type: 'GAME_OVER', winner: 'OPP', reason: '상대방의 목숨이 모두 소진되어 승리하셨습니다!' });
-                endGame('LOSE', '목숨이 모두 소진되어 패배하셨습니다!');
+                sendData({ type: 'GAME_OVER', winner: 'OPP', reason: '상대방의 목숨 소진으로 승리하셨습니다!' });
+                endGame('LOSE', '목숨 소진으로 패배하셨습니다!');
             } else {
-                // 목숨이 남아있다면 턴을 상대방에게 바로 넘김
                 sendData({ type: 'WRONG_ANSWER', oppLives: myLives });
                 isMyTurn = false;
                 setTurnUI();
@@ -394,14 +396,12 @@
             const inputField = document.getElementById('word-input');
             const word = inputField.value.trim();
 
-            // 1. 단어 분석 및 사전식 검증 수행
             const dictCheck = await checkValidDictionary(word);
             if(!dictCheck.valid) {
                 handleWrongAnswer(dictCheck.msg);
                 return;
             }
 
-            // 2. 끝말잇기 매칭 규칙 검사
             const lastChar = currentWord.slice(-1);
             const firstChar = word.charAt(0);
             const ruleChar = getInitialChar(lastChar);
@@ -411,13 +411,11 @@
                 return;
             }
 
-            // 3. 중복 단어 검사
             if (usedWords.has(word)) {
                 handleWrongAnswer('이미 사용된 단어입니다.');
                 return;
             }
 
-            // 규칙 모두 통과 시 정상 처리
             usedWords.add(word);
             myScore += word.length * 10;
             document.getElementById('my-score').innerText = myScore;
@@ -454,7 +452,7 @@
 
         function endGame(result, reason) {
             clearInterval(timer);
-            document.getElementById('winner-title').innerText = result === 'WIN' ? '🏆 당신의 승리!' : '💀 당신의 패배...';
+            document.getElementById('winner-title').innerText = result === 'WIN' ? '🏆 대결 승리!' : '💀 패배...';
             document.getElementById('game-over-reason').innerText = reason;
             document.getElementById('game-over-modal').style.display = 'flex';
         }
